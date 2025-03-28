@@ -44,14 +44,11 @@ class FEMSolver:
         # Gauss quadrature points
         gp = [-1/np.sqrt(3), 1/np.sqrt(3)]
         
-        # Loop over integration points
+        # Precompute B matrices for each integration point
         for i in gp:
             for j in gp:
                 for k in gp:
-                    # Compute B matrix at integration point
-                    B = self._compute_B_matrix(i, j, k)
-                    
-                    # Contribute to stiffness matrix
+                    B = self._compute_B_matrix(i, j, k)  # Should be vectorized if possible
                     K += B.T @ D @ B
                     
         return K

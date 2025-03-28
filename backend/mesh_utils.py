@@ -25,8 +25,10 @@ class MeshHandler:
         """
         try:
             mesh = trimesh.load_mesh(stl_path)
-            voxels = mesh.voxelized(pitch=1 / nx)
+            if not mesh.is_watertight:
+                logging.warning("Mesh is not watertight; optimization results may be less accurate.")
+            voxels = mesh.voxelized(pitch=(mesh.extents.max() / max(nx, ny, nz)))
             return voxels.matrix.astype(float)
         except Exception as e:
-            logger.error(f"Error loading STL file {stl_path}: {e}")
+            logging.error(f"Error loading STL file {stl_path}: {e}")
             return None
