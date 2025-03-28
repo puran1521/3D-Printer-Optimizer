@@ -1,0 +1,21 @@
+{
+    "name": "AI-Powered 3D Printing Optimizer",
+    "short_name": "3D Optimizer",
+    "description": "AI-powered 3D printing optimization tool",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#2196f3",
+    "icons": [
+      {
+        "src": "favicon.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "apple-touch-icon.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
