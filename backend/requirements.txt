@@ -3,3 +3,4 @@ scipy>=1.7.0
 trimesh>=3.9.0
 scikit-image>=0.18.0
 matplotlib>=3.4.0
+flask>=2.0.0
