@@ -14,7 +14,6 @@
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx",
     "postinstall": "electron-builder install-app-deps"
-
   },
   "repository": {
     "type": "git",
@@ -42,6 +41,7 @@
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
     "react-transition-group": "^4.0.0",
+    "rimraf": "^6.0.1",
     "three": "^0.150.0"
   },
   "devDependencies": {
