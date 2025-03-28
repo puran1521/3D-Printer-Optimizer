@@ -18,5 +18,12 @@
   "bugs": {
     "url": "https://github.com/puran1521/3D-Printer-Optimizer/issues"
   },
-  "homepage": "https://github.com/puran1521/3D-Printer-Optimizer#readme"
+  "homepage": "https://github.com/puran1521/3D-Printer-Optimizer#readme",
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.0.0",
+    "react-router-dom": "^7.4.0",
+    "three": "^0.174.0"
+  }
 }
