@@ -222,6 +222,18 @@ const ModelViewer = ({ modelSrc, className }) => {
     );
 };
 
+jest.mock('three', () => {
+  const originalThree = jest.requireActual('three');
+  return {
+    ...originalThree,
+    WebGLRenderer: jest.fn(() => ({
+      setSize: jest.fn(),
+      render: jest.fn(),
+      domElement: { /* Mocked DOM element */ },
+    })),
+  };
+});
+
 describe('ModelViewer', () => {
   it('renders without crashing', () => {
     render(<ModelViewer />);
