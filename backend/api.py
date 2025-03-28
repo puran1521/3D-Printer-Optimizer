@@ -2,8 +2,8 @@ import cProfile
 import io
 import pstats
 from flask import Flask, request, jsonify
-from .optimizer import TopologyOptimizer
-from .config import OptimizationConfig
+from backend.optimizer import TopologyOptimizer
+from backend.config import OptimizationConfig
 import logging
 
 app = Flask(__name__)
