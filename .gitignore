@@ -1,1 +1,9 @@
+# Test results
+coverage/
+*.log
+
+# Node.js dependencies
 node_modules/
+
+# Python virtual environment
+venv/
