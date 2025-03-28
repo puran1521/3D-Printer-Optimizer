@@ -34,7 +34,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5000', // Ensure backend is running on this port
         changeOrigin: true
       }
     }

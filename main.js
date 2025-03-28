@@ -77,13 +77,23 @@ async function initDatabase() {
 function setupIPC() {
 
   ipcMain.handle('delete-project', async (event, projectId) => {
-    // Add delete logic
+    return new Promise((resolve, reject) => {
+      db.run('DELETE FROM projects WHERE id = ?', [projectId], (err) => {
+        if (err) reject(err);
+        else resolve({ success: true });
+      });
+    });
   });
-  
+
   ipcMain.handle('get-project', async (event, projectId) => {
-    // Add get single project logic
+    return new Promise((resolve, reject) => {
+      db.get('SELECT * FROM projects WHERE id = ?', [projectId], (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
   });
-  
+
   // Projects API
   ipcMain.handle('get-projects', async () => {
     return new Promise((resolve, reject) => {
@@ -102,7 +112,7 @@ function setupIPC() {
 
     return new Promise((resolve, reject) => {
       const pythonScript = path.join(__dirname, 'src', 'backend', 'main.py');
-      const python = spawn('python', [pythonScript, inputPath, outputPath]);
+      const python = spawn(process.platform === 'win32' ? 'python' : 'python3', [pythonScript, inputPath, outputPath]);
 
       let stdoutData = '';
       let stderrData = '';

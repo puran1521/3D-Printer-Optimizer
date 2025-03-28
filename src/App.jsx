@@ -5,7 +5,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner';
 import './styles/App.css';
 
-// Lazy load components for performance
+// Ensure these components exist in the specified paths
 const ModelViewer = React.lazy(() => import('./components/ModelViewer'));
 const MetricsDashboard = React.lazy(() => import('./components/MetricsDashboard'));
 const ProjectManager = React.lazy(() => import('./components/ProjectManager'));

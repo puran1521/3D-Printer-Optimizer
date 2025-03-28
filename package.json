@@ -4,14 +4,15 @@
   "description": "3D Printer Optimization App <br>\r Author - Puran Patel",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/puran1521/3D-Printer-Optimizer.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Puran Patel",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
