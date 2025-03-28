@@ -1,0 +1,21 @@
+{
+  "name": "3d-printer-optimizer",
+  "version": "1.0.0",
+  "description": "3D Printer Optimization App <br>\r Author - Puran Patel",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/puran1521/3D-Printer-Optimizer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/puran1521/3D-Printer-Optimizer/issues"
+  },
+  "homepage": "https://github.com/puran1521/3D-Printer-Optimizer#readme"
+}
