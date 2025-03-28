@@ -37,5 +37,10 @@ def health():
     """API health check endpoint."""
     return jsonify({"status": "ok"}), 200
 
+@app.route('/', methods=['GET'])
+def index():
+    return jsonify({"message": "Welcome to the 3D Printer Optimizer API"}), 200
+
 if __name__ == '__main__':
     app.run(debug=True)
+    print(app.url_map)

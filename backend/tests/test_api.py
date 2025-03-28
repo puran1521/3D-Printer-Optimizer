@@ -2,7 +2,7 @@ import pytest
 from flask import Flask
 import requests
 import numpy as np
-from ..api import app
+from backend.api import app
 
 BASE_URL = "http://localhost:5000/api"
 
@@ -12,11 +12,11 @@ def client():
     with app.test_client() as client:
         yield client
 
-def test_api_healthcheck():
+def test_api_healthcheck(client):
     """Test if the API is running and responds with status OK."""
-    response = requests.get(f"{BASE_URL}/health")
+    response = client.get('/api/health')
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response.get_json() == {"status": "ok"}
 
 def test_api_optimization(client, mocker):
     """Test the optimization API endpoint."""
