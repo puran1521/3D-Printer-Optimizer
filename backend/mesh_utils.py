@@ -28,6 +28,8 @@ class MeshHandler:
             if not mesh.is_watertight:
                 logging.warning("Mesh is not watertight; optimization results may be less accurate.")
             voxels = mesh.voxelized(pitch=(mesh.extents.max() / max(nx, ny, nz)))
+            if voxels is None:
+                raise RuntimeError("Voxelization failed")
             return voxels.matrix.astype(float)
         except Exception as e:
             logging.error(f"Error loading STL file {stl_path}: {e}")

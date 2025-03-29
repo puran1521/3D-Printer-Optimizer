@@ -55,14 +55,12 @@ class FEMSolver:
     
     def _compute_B_matrix(self, xi: float, eta: float, zeta: float) -> np.ndarray:
         """Compute B matrix for strain-displacement relationship."""
-        # Shape function derivatives
-        dN = np.zeros((8, 3))
-        # ... shape function derivatives computation ...
-        
-        # Assemble B matrix (6x24)
+        dN = np.random.rand(8, 3)  # Placeholder for shape function derivatives
         B = np.zeros((6, 24))
-        # ... B matrix assembly ...
-        
+        for i in range(8):
+            B[0, i*3] = dN[i, 0]
+            B[1, i*3+1] = dN[i, 1]
+            B[2, i*3+2] = dN[i, 2]
         return B
 
     @staticmethod

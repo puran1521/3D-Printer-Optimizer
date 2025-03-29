@@ -1,6 +1,7 @@
 import cProfile
 import io
 import pstats
+import os
 from flask import Flask, request, jsonify
 from backend.optimizer import TopologyOptimizer
 from backend.config import OptimizationConfig
@@ -15,15 +16,19 @@ def profile_function(func):
     """Decorator to profile an endpoint."""
     def wrapper(*args, **kwargs):
         pr = cProfile.Profile()
-        pr.enable()
-        result = func(*args, **kwargs)
-        pr.disable()
-
-        s = io.StringIO()
-        ps = pstats.Stats(pr, stream=s).sort_stats(pstats.SortKey.CUMULATIVE)
-        ps.print_stats(10)  # Show the top 10 slowest calls
-        logger.info(f"Performance stats for {func.__name__}:\n{s.getvalue()}")
-
+        try:
+            pr.enable()
+            result = func(*args, **kwargs)
+            pr.disable()
+        except Exception as e:
+            pr.disable()
+            logger.error(f"Error during profiling: {e}", exc_info=True)
+            raise
+        finally:
+            s = io.StringIO()
+            ps = pstats.Stats(pr, stream=s).sort_stats(pstats.SortKey.CUMULATIVE)
+            ps.print_stats(10)  # Show the top 10 slowest calls
+            logger.info(f"Performance stats for {func.__name__}:\n{s.getvalue()}")
         return result
     return wrapper
 
@@ -33,8 +38,8 @@ def optimize():
     try:
         data = request.get_json()
         stl_path = data.get('stl_path')
-        if not stl_path:
-            return jsonify({'error': 'Missing STL file path'}), 400
+        if not stl_path or not os.path.isfile(stl_path):
+            return jsonify({'error': 'Invalid or missing STL file path'}), 400
 
         result = optimizer.optimize(stl_path)
         return jsonify({'success': True, 'result': result}), 200

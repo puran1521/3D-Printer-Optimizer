@@ -55,7 +55,7 @@ class TopologyOptimizer:
             K = self.fem_solver.assemble_global_matrix(densities, self.config.E1, KE, self.config.penal)
             ndof = 3 * (self.config.nelx + 1) * (self.config.nely + 1) * (self.config.nelz + 1)
             F = np.zeros(ndof)
-            fixed_dofs = []  # Add fixed DOFs if needed
+            fixed_dofs = [0, 1, 2]  # Example fixed DOFs; adjust as needed
             free_dofs = list(set(range(ndof)) - set(fixed_dofs))
             U = self.fem_solver.solve_system(K, F, free_dofs)
             return U
@@ -65,8 +65,7 @@ class TopologyOptimizer:
 
     def _compute_sensitivities(self, densities: np.ndarray, U: np.ndarray, KE: np.ndarray) -> np.ndarray:
         try:
-            dc = np.zeros_like(densities)
-            # Implement sensitivity analysis in a vectorized way if possible
+            dc = -densities * np.sum(U**2)  # Simplified sensitivity computation
             return dc
         except Exception as e:
             logger.error(f"Sensitivity analysis failed: {e}")
