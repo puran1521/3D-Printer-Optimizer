@@ -5,7 +5,7 @@ Defines key parameters used in topology optimization.
 """
 
 class OptimizationConfig:
-    def __init__(self, nelx=50, nely=50, nelz=50, volfrac=0.4, penal=3.0, rmin=1.5, E1=1.0, E2=1e-9, nu=0.3, tol=1e-3, max_iter=100):
+    def __init__(self, nelx=50, nely=50, nelz=37, volfrac=0.4, penal=3.0, rmin=1.5, E1=1.0, E2=1e-9, nu=0.3, tol=1e-3, max_iter=100):
         self.nelx = nelx
         self.nely = nely
         self.nelz = nelz

@@ -5,5 +5,9 @@ coverage/
 # Node.js dependencies
 node_modules/
 
+# production
+/build
+/dist
+
 # Python virtual environment
 venv/
