@@ -51,34 +51,13 @@ class TopologyOptimizer:
             logger.error(f"Optimization failed: {e}")
             raise RuntimeError(f"Optimization failed: {e}")
 
-    def _perform_fem_analysis(self, voxel_grid, nodes, elements, KE: np.ndarray) -> np.ndarray:
-        try:
-            logger.info("Starting FEM analysis...")
-            K = self.assemble_global_matrix(voxel_grid, nodes, elements, KE, self.config.penal)
-            logger.info(f"Global stiffness matrix K shape: {K.shape}")
-            if K is None:
-                raise ValueError("Global stiffness matrix assembly failed.")
-
-            ndof = len(nodes) * 3
-            F = np.zeros(ndof)
-            F[300] = -1.0
-            logger.info(f"Force vector F shape: {F.shape}")
-
-            fixed_dofs = [0, 1, 2] # Example: Fix the first node in all three directions
-            if len(fixed_dofs) < 3:
-                logger.warning("Insufficient boundary conditions. Ensure at least 3 DOFs are fixed.")
-            free_dofs = list(set(range(ndof)) - set(fixed_dofs))
-            logger.info(f"Free DOFs: {len(free_dofs)}, Fixed DOFs: {len(fixed_dofs)}")
-
-            U = self.fem_solver.solve_system(K, F, free_dofs)
-            if U is None or np.isnan(U).any():
-                raise RuntimeError("Displacement vector contains invalid values.")
-
-            logger.info(f"Displacement vector U computed successfully.")
-            return U
-        except Exception as e:
-            logger.error(f"FEM analysis failed: {e}", exc_info=True)
+    def _perform_fem_analysis(self, voxel_grid, nodes, elements, KE):
+        K = self.assemble_global_matrix(voxel_grid, nodes, elements, KE, self.config.penal)
+        if K is None:
+            logger.error("Failed to assemble global stiffness matrix")
             return None
+        logger.info(f"Global stiffness matrix K shape: {K.shape}")
+        # ... rest of the function
 
     def _compute_sensitivities(self, densities: np.ndarray, U: np.ndarray, KE: np.ndarray) -> np.ndarray:
         try:
@@ -116,15 +95,75 @@ class TopologyOptimizer:
     def assemble_global_matrix(self, densities, nodes, elements, KE, penal):
         try:
             logger.info("Assembling global stiffness matrix...")
+            
+            # Convert elements to numpy array and check its validity
+            elements = np.asarray(elements)
+            if elements.size == 0:
+                raise ValueError("Empty elements array")
+                
+            logger.debug(f"densities shape: {densities.shape}")
+            logger.debug(f"nodes shape: {nodes.shape}")
+            logger.debug(f"elements shape: {elements.shape}")
+            logger.debug(f"KE shape: {KE.shape}")
+
             ndof = len(nodes) * 3
             global_matrix = lil_matrix((ndof, ndof))
 
             for element_index, element_nodes in enumerate(elements):
-                element_dofs = np.array(element_nodes) * 3
-                element_dofs = np.concatenate([element_dofs, element_dofs + 1, element_dofs + 2])
-                global_matrix[np.ix_(element_dofs, element_dofs)] += KE * densities[element_nodes[0]//1,element_nodes[0]//1,element_nodes[0]//1]**penal
+                # Get coordinates more safely
+                node_coords = nodes[element_nodes]
+                center = node_coords.mean(axis=0)
+                
+                # Convert to integer indices more safely
+                coords = np.floor(center).astype(int)
+                coords = np.clip(coords, 0, 
+                               [densities.shape[0]-1, 
+                                densities.shape[1]-1, 
+                                densities.shape[2]-1])
+                logger.debug(f"Clipped coords: {coords}")
+
+                # Debug current element
+                if element_index % 1000 == 0:
+                    logger.debug(f"Processing element {element_index}")
+                    logger.debug(f"Element coords: {coords}")
+
+                # Get density and assemble matrix
+                element_density = densities[coords[0], coords[1], coords[2]]
+                logger.debug(f"element_density: {element_density}")
+                element_dofs = []
+                for node in element_nodes:
+                    element_dofs.extend([3*node, 3*node + 1, 3*node + 2])
+                element_dofs = np.array(element_dofs)
+                
+                logger.debug(f"Element DOFs: {element_dofs}")
+                logger.debug(f"Global matrix shape: {global_matrix.shape}")
+                logger.debug(f"KE shape: {KE.shape}")
+                logger.debug(f"Element density: {element_density}")
+
+                if np.any(element_dofs >= global_matrix.shape[0]):
+                    logger.error(f"Invalid DOFs: {element_dofs}")
+                    raise ValueError("DOFs exceed global matrix dimensions")
+                if np.any(element_dofs < 0):
+                    logger.error(f"Negative DOFs: {element_dofs}")
+                    raise ValueError("DOFs contain negative indices")
+                if KE.shape[0] != KE.shape[1] or KE.shape[0] != len(element_dofs):
+                    logger.error(f"Invalid KE shape: {KE.shape} for DOFs: {len(element_dofs)}")
+                    raise ValueError("KE dimensions do not match DOFs")
+
+                logger.debug(f"element_index: {element_index}")
+                logger.debug(f"element_nodes: {element_nodes}")
+                logger.debug(f"element_density: {element_density}")
+                logger.debug(f"KE: {KE}")
+
+                # Add contribution
+                try:
+                    global_matrix[np.ix_(element_dofs, element_dofs)] += KE * (element_density**penal)
+                except Exception as e:
+                    logger.error(f"Error updating global matrix: {e}", exc_info=True)
+                    raise
 
             return global_matrix.tocsr()
+
         except Exception as e:
             logger.error(f"Error assembling global matrix: {e}", exc_info=True)
             return None
